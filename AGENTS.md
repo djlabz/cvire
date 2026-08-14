@@ -13,7 +13,7 @@ Ferramentas com harness próprio devem ler também `CLAUDE.md` (Claude) ou `.cur
 - Tailwind CSS v4 + variáveis CSS
 - Dexie.js (IndexedDB) + Zustand
 - `@dnd-kit` (drag & drop)
-- PDF: `html2canvas-pro` + `jspdf` (raster + text layer ATS); `@react-pdf/renderer` também no repo
+- PDF: dois modos — **ATS-safe** text-native (`@react-pdf/renderer`, `src/services/atsPdfDocument.tsx`) e **Visual** raster (`html2canvas-pro` + `jspdf`, sem camada de texto)
 - i18next (`en-US`, `pt-BR`)
 - IA opcional: `@google/genai` (BYOK, chaves criptografadas com Web Crypto AES-GCM)
 
@@ -25,8 +25,10 @@ Ferramentas com harness próprio devem ler também `CLAUDE.md` (Claude) ou `.cur
 | Build (gate) | `npm run build` (`tsc -b && vite build`) |
 | Lint | `npm run lint` |
 | Preview | `npm run preview` |
+| Testes unitários | `npm test` (page cut, crypto vault, ATS engine, job matcher) |
+| Verify ATS PDF (gate) | `npm run verify:ats` (headless: links /URI, ordem, raster/invisível, paginação) |
 | Teste corte PDF | `npm run test:pdf-cut` |
-| Smoke PDF | `npm run smoke:pdf` (app rodando) |
+| Smoke PDF | `npm run smoke:pdf` (app rodando; testa os dois modos de export) |
 | Verify PDF cut | `npm run verify:pdf-cut` (app em `CVIRE_URL` ou `5173`) |
 | Servir board HTML | `npm run serve:cv-board` → `http://127.0.0.1:8765/` |
 
@@ -93,7 +95,8 @@ Saídas versionáveis:
 | Estado | `src/store/` |
 | Persistência | Dexie + serviços em `src/services/` |
 | Templates | `src/components/templates/` |
-| Export PDF | `src/services/exportService.ts`, `src/services/pdfPageCut.ts` |
+| Export PDF (ATS-safe) | `src/services/atsPdfDocument.tsx`, `src/services/atsPdfExport.ts` |
+| Export PDF (visual) | `src/services/exportService.ts`, `src/services/pdfPageCut.ts` |
 | Import/export JSON | `src/services/backupService.ts` |
 | Conteúdo CV (prompts + saídas) | `cv-content/` |
 | Prompts CV | `cv-content/prompts/` |

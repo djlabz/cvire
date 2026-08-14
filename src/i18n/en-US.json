@@ -43,6 +43,7 @@
     "noResumesSubtitle": "Get started by creating a new custom resume or loading sample demo data.",
     "lastEdited": "Last edited",
     "duplicate": "Duplicate",
+    "deleteConfirm": "Permanently delete \"{{title}}\"? This cannot be undone — consider archiving instead.",
     "exportJson": "Export JSON",
     "importJson": "Import JSON",
     "downloadAiJson": "AI JSON Template"

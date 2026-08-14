@@ -29,9 +29,15 @@ export const JobMatcherDrawer: React.FC = () => {
       .join(', ');
 
     if (missing) {
-      navigator.clipboard.writeText(missing);
-      setCopiedMissing(true);
-      setTimeout(() => setCopiedMissing(false), 2000);
+      navigator.clipboard
+        .writeText(missing)
+        .then(() => {
+          setCopiedMissing(true);
+          setTimeout(() => setCopiedMissing(false), 2000);
+        })
+        .catch((err) => {
+          console.error('[JOB_MATCHER] Clipboard write failed:', err);
+        });
     }
   };
 

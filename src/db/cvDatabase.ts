@@ -44,8 +44,13 @@ export const db = new CVDatabase();
  * Initialize database with default seed profiles on first startup if empty.
  */
 export async function seedDatabaseIfEmpty(): Promise<void> {
-  const count = await db.profiles.count();
-  if (count === 0) {
-    await db.profiles.bulkAdd(demoProfiles);
-  }
+  // Transaction + bulkPut make seeding idempotent: two concurrent inits
+  // (e.g. React StrictMode double-running the mount effect) previously raced
+  // count() and crashed the second bulkAdd with "Key already exists".
+  await db.transaction('rw', db.profiles, async () => {
+    const count = await db.profiles.count();
+    if (count === 0) {
+      await db.profiles.bulkPut(demoProfiles);
+    }
+  });
 }

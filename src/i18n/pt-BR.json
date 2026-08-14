@@ -43,6 +43,7 @@
     "noResumesSubtitle": "Comece criando um novo currículo ou carregando modelos de demonstração.",
     "lastEdited": "Editado em",
     "duplicate": "Duplicar",
+    "deleteConfirm": "Excluir permanentemente \"{{title}}\"? Isso não pode ser desfeito — considere arquivar em vez disso.",
     "exportJson": "Exportar JSON",
     "importJson": "Importar JSON",
     "downloadAiJson": "Modelo IA (JSON)"

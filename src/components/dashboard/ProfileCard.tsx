@@ -122,9 +122,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onSelect, onE
           <button
             onClick={(e) => {
               e.stopPropagation();
-              deleteProfile(profile.id);
+              if (window.confirm(t('dashboard.deleteConfirm', { title: profile.title }))) {
+                deleteProfile(profile.id);
+              }
             }}
-            title={t('dashboard.delete')}
+            title={t('common.delete')}
             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
