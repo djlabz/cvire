@@ -1,5 +1,7 @@
 import { CVProfile } from '../types/cv';
 import { ATSScoreBreakdown, LinterDiagnostic } from '../types/ats';
+import { extractTechKeywords } from './techKeywords';
+import { profileToPlainText } from './profileText';
 
 const ACTION_VERBS = new Set([
   'architected', 'built', 'created', 'designed', 'developed', 'engineered',
@@ -7,6 +9,35 @@ const ACTION_VERBS = new Set([
   'orchestrated', 'pioneered', 'reduced', 'scaled', 'spearheaded', 'transformed',
   'desenvolveu', 'liderou', 'criou', 'otimizou', 'arquitetou', 'reduziu', 'implementou'
 ]);
+
+/**
+ * Continuous technical-keyword scoring (0-100) from the shared tech
+ * dictionary, combining:
+ * - diversity: how many DISTINCT technologies appear (12+ ≈ full marks), and
+ * - density:   tech mentions per 100 words (≈6/100 is healthy; extreme
+ *              stuffing above 18/100 tapers back down).
+ */
+export function scoreTechnicalKeywords(plainText: string): number {
+  const words = plainText.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return 0;
+
+  const techCounts = extractTechKeywords(plainText);
+  const uniqueTech = techCounts.size;
+  let totalMentions = 0;
+  techCounts.forEach((count) => {
+    totalMentions += count;
+  });
+
+  const diversityScore = Math.min(uniqueTech / 12, 1);
+
+  const mentionsPer100Words = (totalMentions / words.length) * 100;
+  let densityScore = Math.min(mentionsPer100Words / 6, 1);
+  if (mentionsPer100Words > 18) {
+    densityScore = Math.max(0.6, 1 - (mentionsPer100Words - 18) / 30);
+  }
+
+  return Math.round((diversityScore * 0.6 + densityScore * 0.4) * 100);
+}
 
 export function calculateATSScore(profile: CVProfile): {
   breakdown: ATSScoreBreakdown;
@@ -24,10 +55,17 @@ export function calculateATSScore(profile: CVProfile): {
   if (hasSkills) structureScore += 15;
 
   // 2. Keywords & Relevance (25%)
-  const allText = JSON.stringify(profile).toLowerCase();
-  let keywordsScore = 70;
-  if (allText.includes('react') || allText.includes('typescript') || allText.includes('management')) {
-    keywordsScore = 90;
+  const keywordsScore = scoreTechnicalKeywords(profileToPlainText(profile));
+
+  if (keywordsScore < 50) {
+    diagnostics.push({
+      id: 'diag-keywords',
+      ruleId: 'low-technical-keywords',
+      severity: 'warning',
+      title: 'Low Technical Keyword Coverage',
+      message: 'Few recognizable technologies, tools, or methodologies were detected in your resume.',
+      suggestion: 'Name the concrete stack you used (languages, frameworks, databases, cloud, tooling) in skills and experience bullets.',
+    });
   }
 
   // 3. Metrics & Quantification (20%)
