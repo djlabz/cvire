@@ -1,29 +1,16 @@
 import React from 'react';
 import { CVSection, DisplayMode, getEffectiveDisplayMode } from '../../types/cv';
+import { getFriendlyLinkLabel, getFullUrl } from './linkHelpers';
 
 interface SectionContentRendererProps {
   section: CVSection;
-  primaryColor: string;
+  /** Kept for template API compatibility; current display modes don't tint content. */
+  primaryColor?: string;
   isSidebar?: boolean;
 }
 
-export const getFriendlyLinkLabel = (url?: string, fallbackLabel = 'Website') => {
-  if (!url) return '';
-  const lower = url.toLowerCase();
-  if (lower.includes('linkedin.com')) return 'LinkedIn';
-  if (lower.includes('github.com')) return 'GitHub';
-  if (lower.includes('portfolio')) return 'Portfolio';
-  return fallbackLabel;
-};
-
-export const getFullUrl = (url?: string) => {
-  if (!url) return '#';
-  return url.startsWith('http') ? url : `https://${url}`;
-};
-
 export const SectionContentRenderer: React.FC<SectionContentRendererProps> = ({
   section,
-  primaryColor,
   isSidebar = false,
 }) => {
   const displayMode: DisplayMode = getEffectiveDisplayMode(section);
