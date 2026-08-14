@@ -1,8 +1,17 @@
 {
   "name": "cvire",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djlabz/cvire.git"
+  },
+  "homepage": "https://djlabz.github.io/cvire/",
+  "bugs": {
+    "url": "https://github.com/djlabz/cvire/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
