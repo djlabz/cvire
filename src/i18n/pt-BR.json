@@ -110,6 +110,16 @@
     "noMatched": "Nenhuma palavra-chave correspondente encontrada ainda.",
     "allMatched": "Parabéns! Todas as palavras-chave principais da vaga foram encontradas no seu CV!"
   },
+  "export": {
+    "title": "Exportar PDF",
+    "subtitle": "Escolha como o arquivo do currículo será gerado",
+    "atsTitle": "Compatível com ATS",
+    "recommended": "Recomendado",
+    "atsDesc": "Texto real selecionável, links clicáveis e uma única coluna de leitura que os sistemas ATS interpretam na ordem correta. Arquivo pequeno, sem imagens. Use este para se candidatar a vagas.",
+    "visualTitle": "Visual (fidelidade de impressão)",
+    "visualDesc": "Captura fiel do layout da tela, exportada como PDF baseado em imagem. Ótimo para imprimir ou compartilhar visualmente — mas sistemas ATS não conseguem ler.",
+    "error": "Falha na exportação. Verifique o console do navegador para detalhes."
+  },
   "ats": {
     "scoreTitle": "Pontuação ATS",
     "plainTextView": "Visualização Texto Puro ATS",

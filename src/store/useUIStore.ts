@@ -11,7 +11,8 @@ export type ActiveModal =
   | 'analytics'
   | 'api-key-byok'
   | 'theme-customizer'
-  | 'template-picker';
+  | 'template-picker'
+  | 'export-pdf';
 
 interface UIStoreState {
   viewMode: ViewMode;
