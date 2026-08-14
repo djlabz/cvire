@@ -9,10 +9,18 @@ export interface EncryptedKeyRecord {
   updatedAt: number;
 }
 
+export interface CryptoKeyRecord {
+  id: string;
+  /** Non-extractable AES-GCM master key, persisted via structured clone. */
+  key: CryptoKey;
+  createdAt: number;
+}
+
 export class CVDatabase extends Dexie {
   profiles!: Table<CVProfile, string>;
   versions!: Table<CVVersion & { profileId: string }, string>;
   encryptedKeys!: Table<EncryptedKeyRecord, string>;
+  cryptoKeys!: Table<CryptoKeyRecord, string>;
 
   constructor() {
     super('CVBuilderProDB');
@@ -21,6 +29,11 @@ export class CVDatabase extends Dexie {
       profiles: 'id, title, language, isFavorite, isArchived, updatedAt',
       versions: 'versionId, profileId, timestamp',
       encryptedKeys: 'provider, updatedAt',
+    });
+
+    // v2: persist the vault master key so encrypted API keys survive reloads.
+    this.version(2).stores({
+      cryptoKeys: 'id',
     });
   }
 }

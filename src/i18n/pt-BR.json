@@ -110,6 +110,10 @@
     "noMatched": "Nenhuma palavra-chave correspondente encontrada ainda.",
     "allMatched": "Parabéns! Todas as palavras-chave principais da vaga foram encontradas no seu CV!"
   },
+  "apiKey": {
+    "resetNotice": "A chave de API salva anteriormente não pôde ser descriptografada após uma atualização do app e foi removida por segurança. Insira sua chave novamente — a partir de agora ela permanece legível entre sessões.",
+    "missingKey": "Nenhuma chave de API do Gemini encontrada. Configure sua chave no cofre BYOK."
+  },
   "export": {
     "title": "Exportar PDF",
     "subtitle": "Escolha como o arquivo do currículo será gerado",

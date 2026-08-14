@@ -1,55 +1,66 @@
 import { db } from './cvDatabase';
+import { createCryptoVault, VaultProvider, VaultStorage } from './cryptoVaultCore';
 
-let cachedCryptoKey: CryptoKey | null = null;
+/**
+ * Browser vault backed by Dexie/IndexedDB. The AES-GCM master key is stored
+ * as a non-extractable CryptoKey via structured clone and reused across
+ * sessions — see cryptoVaultCore.ts for the full behavior contract.
+ */
 
-async function getOrCreateCryptoKey(): Promise<CryptoKey> {
-  if (cachedCryptoKey) return cachedCryptoKey;
+const MASTER_KEY_ID = 'vault-master-key';
+const RESET_NOTICE_STORAGE_KEY = 'cvire:vault-reset-notice';
 
-  const key = await window.crypto.subtle.generateKey(
-    {
-      name: 'AES-GCM',
-      length: 256,
-    },
-    true,
-    ['encrypt', 'decrypt']
-  );
+const dexieStorage: VaultStorage = {
+  async getMasterKey() {
+    const record = await db.cryptoKeys.get(MASTER_KEY_ID);
+    return record?.key;
+  },
+  async putMasterKey(key) {
+    await db.cryptoKeys.put({ id: MASTER_KEY_ID, key, createdAt: Date.now() });
+  },
+  async getCipher(provider) {
+    return db.encryptedKeys.get(provider);
+  },
+  async putCipher(record) {
+    await db.encryptedKeys.put(record);
+  },
+  async deleteCipher(provider) {
+    await db.encryptedKeys.delete(provider);
+  },
+};
 
-  cachedCryptoKey = key;
-  return key;
+const vault = createCryptoVault(dexieStorage);
+
+export async function saveEncryptedAPIKey(provider: VaultProvider, plainKey: string): Promise<void> {
+  await vault.saveEncryptedAPIKey(provider, plainKey);
+  clearVaultResetNotice();
 }
 
-export async function saveEncryptedAPIKey(provider: 'gemini' | 'openai', plainKey: string): Promise<void> {
-  const cryptoKey = await getOrCreateCryptoKey();
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const encodedKey = new TextEncoder().encode(plainKey);
-
-  const encryptedBuffer = await window.crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    cryptoKey,
-    encodedKey
-  );
-
-  await db.encryptedKeys.put({
-    provider,
-    encryptedKey: encryptedBuffer,
-    iv,
-    updatedAt: Date.now(),
-  });
+export async function getDecryptedAPIKey(provider: VaultProvider): Promise<string | null> {
+  const value = await vault.getDecryptedAPIKey(provider);
+  if (vault.consumeResetNotice()) {
+    try {
+      localStorage.setItem(RESET_NOTICE_STORAGE_KEY, '1');
+    } catch {
+      // Storage may be unavailable (private mode) — the in-session notice was consumed above.
+    }
+  }
+  return value;
 }
 
-export async function getDecryptedAPIKey(provider: 'gemini' | 'openai'): Promise<string | null> {
-  const record = await db.encryptedKeys.get(provider);
-  if (!record || !cachedCryptoKey) return null;
-
+/** True when a previously saved key had to be purged and must be re-entered. */
+export function hasVaultResetNotice(): boolean {
   try {
-    const decryptedBuffer = await window.crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: new Uint8Array(record.iv) },
-      cachedCryptoKey,
-      record.encryptedKey
-    );
+    return localStorage.getItem(RESET_NOTICE_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
-    return new TextDecoder().decode(decryptedBuffer);
-  } catch (err) {
-    return null;
+export function clearVaultResetNotice(): void {
+  try {
+    localStorage.removeItem(RESET_NOTICE_STORAGE_KEY);
+  } catch {
+    // Ignore storage failures.
   }
 }
