@@ -1,6 +1,6 @@
 import Dexie, { Table } from 'dexie';
 import { CVProfile, CVVersion } from '../types/cv';
-import { demoProfiles } from '../data/initialData';
+import { starterProfiles } from '../data/initialData';
 
 export interface EncryptedKeyRecord {
   provider: 'gemini' | 'openai';
@@ -50,7 +50,7 @@ export async function seedDatabaseIfEmpty(): Promise<void> {
   await db.transaction('rw', db.profiles, async () => {
     const count = await db.profiles.count();
     if (count === 0) {
-      await db.profiles.bulkPut(demoProfiles);
+      await db.profiles.bulkPut(starterProfiles);
     }
   });
 }
