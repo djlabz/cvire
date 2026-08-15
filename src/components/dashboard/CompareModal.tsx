@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, GitCompare, ArrowRightLeft } from 'lucide-react';
+import { X, GitCompare } from 'lucide-react';
 import { useCVStore } from '../../store/useCVStore';
 import { useUIStore } from '../../store/useUIStore';
 import { calculateATSScore } from '../../services/atsEngine';

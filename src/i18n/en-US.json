@@ -43,6 +43,7 @@
     "noResumesSubtitle": "Get started by creating a new custom resume or loading sample demo data.",
     "lastEdited": "Last edited",
     "duplicate": "Duplicate",
+    "deleteConfirm": "Permanently delete \"{{title}}\"? This cannot be undone — consider archiving instead.",
     "exportJson": "Export JSON",
     "importJson": "Import JSON",
     "downloadAiJson": "AI JSON Template"
@@ -109,6 +110,20 @@
     "copied": "Copied!",
     "noMatched": "No matching target keywords found yet.",
     "allMatched": "Great job! All key target job requirements are present in your resume!"
+  },
+  "apiKey": {
+    "resetNotice": "Your previously saved API key could not be decrypted after an app update and was removed for safety. Please enter your key again — from now on it stays readable across sessions.",
+    "missingKey": "No Gemini API key found. Please configure your key in the BYOK Key vault."
+  },
+  "export": {
+    "title": "Export PDF",
+    "subtitle": "Choose how your resume file is generated",
+    "atsTitle": "ATS-safe",
+    "recommended": "Recommended",
+    "atsDesc": "Real selectable text, clickable links, and a single reading column that ATS parsers read in the correct order. Small file, no images. Use this to apply for jobs.",
+    "visualTitle": "Visual (print fidelity)",
+    "visualDesc": "Pixel-perfect snapshot of the on-screen layout, exported as an image-based PDF. Great for printing or sharing visually — but ATS software cannot read it.",
+    "error": "Export failed. Please check the browser console for details."
   },
   "ats": {
     "scoreTitle": "ATS Score",

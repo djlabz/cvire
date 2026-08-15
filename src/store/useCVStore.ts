@@ -12,6 +12,8 @@ interface CVStoreState {
   // Database initialization & load
   initStore: () => Promise<void>;
   selectProfile: (id: string) => void;
+  /** Re-read all profiles from IndexedDB (e.g. after a version restore) and select `selectId`. */
+  refreshProfiles: (selectId?: string) => Promise<void>;
 
   // Profile CRUD
   createProfile: (title?: string) => Promise<string>;
@@ -67,6 +69,13 @@ export const useCVStore = create<CVStoreState>((set, get) => ({
   selectProfile: (id: string) => {
     const found = get().profiles.find((p) => p.id === id) || null;
     set({ activeProfileId: id, activeProfile: found });
+  },
+
+  refreshProfiles: async (selectId?: string) => {
+    const all = await db.profiles.toArray();
+    const targetId = selectId ?? get().activeProfileId;
+    const active = all.find((p) => p.id === targetId) || all[0] || null;
+    set({ profiles: all, activeProfileId: active?.id || null, activeProfile: active });
   },
 
   createProfile: async (title = 'Untitled Resume') => {

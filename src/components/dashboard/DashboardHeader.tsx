@@ -32,8 +32,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     try {
       const count = await importResumesJSON(file);
       alert(`Success! ${count} resume(s) imported into cvire.`);
-    } catch (err: any) {
-      alert(`Import Failed: ${err.message || 'Invalid JSON file format'}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid JSON file format';
+      alert(`Import Failed: ${message}`);
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -94,7 +95,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
           {/* Export JSON Backup */}
           <button
-            onClick={() => exportAllResumesJSON()}
+            onClick={() => {
+              exportAllResumesJSON().catch((err) => {
+                console.error('[BACKUP] Export failed:', err);
+                alert('Backup export failed. Please check the browser console.');
+              });
+            }}
             className="px-3 py-2.5 rounded-xl bg-[#0d1322] border border-[#222f47] hover:border-emerald-500 text-slate-300 transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer"
             title={t('dashboard.exportJson')}
           >

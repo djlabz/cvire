@@ -172,7 +172,7 @@ export const demoProfiles: CVProfile[] = [
             bulletItems: [
               { id: 'b-pr1', text: 'Created an offline-first PWA resume builder supporting multi-profile Dexie.js database storage and real-time A4 pagination.', enabled: true },
             ],
-            linkUrl: 'https://github.com/Jownao/cvire',
+            linkUrl: 'https://github.com/djlabz/cvire',
             tags: ['React 19', 'TypeScript', 'IndexedDB', '@react-pdf/renderer'],
           },
         ],

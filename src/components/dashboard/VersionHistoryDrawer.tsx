@@ -6,7 +6,7 @@ import { getProfileVersions, restoreVersionSnapshot, saveVersionSnapshot } from 
 import { CVVersion } from '../../types/cv';
 
 export const VersionHistoryDrawer: React.FC = () => {
-  const { activeProfile, selectProfile } = useCVStore();
+  const { activeProfile, refreshProfiles } = useCVStore();
   const { activeModal, closeModal } = useUIStore();
   const [versions, setVersions] = useState<(CVVersion & { profileId: string })[]>([]);
   const [commitNote, setCommitNote] = useState('');
@@ -29,7 +29,9 @@ export const VersionHistoryDrawer: React.FC = () => {
 
   const handleRestore = async (version: CVVersion & { profileId: string }) => {
     const restored = await restoreVersionSnapshot(version);
-    selectProfile(restored.id);
+    // The restored data only exists in IndexedDB at this point — re-read the
+    // store from the database so the editor immediately shows the snapshot.
+    await refreshProfiles(restored.id);
     closeModal();
   };
 

@@ -1,6 +1,6 @@
 # Project Issue Tracker (`cvire`)
 
-> **Repository:** `git@github.com:Jownao/cvire.git`  
+> **Repository:** `https://github.com/djlabz/cvire`  
 > **Status Legend:** `[ ] Open` | `[x] Completed` | `[~] In Progress`
 
 ---

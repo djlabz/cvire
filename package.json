@@ -1,8 +1,17 @@
 {
   "name": "cvire",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djlabz/cvire.git"
+  },
+  "homepage": "https://djlabz.github.io/cvire/",
+  "bugs": {
+    "url": "https://github.com/djlabz/cvire/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,7 +19,9 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
+    "test": "tsx --test src/services/pdfPageCut.test.ts src/services/atsEngine.test.ts src/services/jobMatcher.test.ts src/db/cryptoVault.test.ts",
     "verify:pdf": "node scripts/verify-pdf-text.mjs",
+    "verify:ats": "tsx scripts/generate-ats-sample.tsx tmp/ats-sample.pdf && node scripts/verify-ats-pdf.mjs tmp/ats-sample.pdf && tsx scripts/verify-ats-pagination.tsx",
     "smoke:pdf": "node scripts/smoke-pdf-export.mjs",
     "test:pdf-cut": "tsx --test src/services/pdfPageCut.test.ts",
     "verify:pdf-cut": "node scripts/verify-pdf-multicolumn-cut.mjs",
@@ -25,7 +36,6 @@
     "@tailwindcss/vite": "^4.3.3",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
-    "html2canvas": "^1.4.1",
     "html2canvas-pro": "^2.3.2",
     "i18next": "^26.3.6",
     "jspdf": "^4.2.1",

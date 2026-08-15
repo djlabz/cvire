@@ -17,7 +17,7 @@ import { ThemeCustomizerDrawer } from './components/editor/ThemeCustomizerDrawer
 import { VersionHistoryDrawer } from './components/dashboard/VersionHistoryDrawer';
 import { CompareModal } from './components/dashboard/CompareModal';
 import { AnalyticsModal } from './components/dashboard/AnalyticsModal';
-import { exportResumeToPDF } from './services/exportService';
+import { ExportModal } from './components/preview/ExportModal';
 import { ArrowLeft, LayoutTemplate, Palette, History, BarChart3, Pencil } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -39,17 +39,16 @@ export const App: React.FC = () => {
   };
 
   const handleExportPDF = () => {
-    const filename = activeProfile
-      ? `${activeProfile.title.toLowerCase().replace(/\s+/g, '-')}.pdf`
-      : 'resume.pdf';
-    exportResumeToPDF(filename);
+    openModal('export-pdf');
   };
 
   const handleDashboardExportPDF = (profile: { id: string; title: string }) => {
     selectProfile(profile.id);
     setCurrentView('editor');
+    // Let the editor preview mount before offering the export modes (the
+    // visual mode rasterizes the on-screen .a4-paper element).
     setTimeout(() => {
-      exportResumeToPDF(`${profile.title.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+      openModal('export-pdf');
     }, 300);
   };
 
@@ -172,6 +171,7 @@ export const App: React.FC = () => {
       <ATSPlainPreviewModal />
       <JobMatcherDrawer />
       <APIKeyModal />
+      <ExportModal />
       <DemoTemplateModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}

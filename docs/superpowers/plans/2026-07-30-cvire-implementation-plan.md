@@ -190,4 +190,4 @@
 ### Task 16: End-to-End Verification & Production Build Audit
 - [ ] Run full build check `npm run build` and ensure TypeScript strict mode compilation succeeds with 0 errors.
 - [ ] Verify offline IndexedDB storage persistence across browser page reloads.
-- [ ] Commit all completed features to Git repository `git@github.com:Jownao/cvire.git`.
+- [ ] Commit all completed features to Git repository `https://github.com/djlabz/cvire`.

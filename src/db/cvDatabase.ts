@@ -9,10 +9,18 @@ export interface EncryptedKeyRecord {
   updatedAt: number;
 }
 
+export interface CryptoKeyRecord {
+  id: string;
+  /** Non-extractable AES-GCM master key, persisted via structured clone. */
+  key: CryptoKey;
+  createdAt: number;
+}
+
 export class CVDatabase extends Dexie {
   profiles!: Table<CVProfile, string>;
   versions!: Table<CVVersion & { profileId: string }, string>;
   encryptedKeys!: Table<EncryptedKeyRecord, string>;
+  cryptoKeys!: Table<CryptoKeyRecord, string>;
 
   constructor() {
     super('CVBuilderProDB');
@@ -21,6 +29,11 @@ export class CVDatabase extends Dexie {
       profiles: 'id, title, language, isFavorite, isArchived, updatedAt',
       versions: 'versionId, profileId, timestamp',
       encryptedKeys: 'provider, updatedAt',
+    });
+
+    // v2: persist the vault master key so encrypted API keys survive reloads.
+    this.version(2).stores({
+      cryptoKeys: 'id',
     });
   }
 }
@@ -31,8 +44,13 @@ export const db = new CVDatabase();
  * Initialize database with default seed profiles on first startup if empty.
  */
 export async function seedDatabaseIfEmpty(): Promise<void> {
-  const count = await db.profiles.count();
-  if (count === 0) {
-    await db.profiles.bulkAdd(demoProfiles);
-  }
+  // Transaction + bulkPut make seeding idempotent: two concurrent inits
+  // (e.g. React StrictMode double-running the mount effect) previously raced
+  // count() and crashed the second bulkAdd with "Key already exists".
+  await db.transaction('rw', db.profiles, async () => {
+    const count = await db.profiles.count();
+    if (count === 0) {
+      await db.profiles.bulkPut(demoProfiles);
+    }
+  });
 }

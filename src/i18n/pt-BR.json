@@ -43,6 +43,7 @@
     "noResumesSubtitle": "Comece criando um novo currículo ou carregando modelos de demonstração.",
     "lastEdited": "Editado em",
     "duplicate": "Duplicar",
+    "deleteConfirm": "Excluir permanentemente \"{{title}}\"? Isso não pode ser desfeito — considere arquivar em vez disso.",
     "exportJson": "Exportar JSON",
     "importJson": "Importar JSON",
     "downloadAiJson": "Modelo IA (JSON)"
@@ -109,6 +110,20 @@
     "copied": "Copiado!",
     "noMatched": "Nenhuma palavra-chave correspondente encontrada ainda.",
     "allMatched": "Parabéns! Todas as palavras-chave principais da vaga foram encontradas no seu CV!"
+  },
+  "apiKey": {
+    "resetNotice": "A chave de API salva anteriormente não pôde ser descriptografada após uma atualização do app e foi removida por segurança. Insira sua chave novamente — a partir de agora ela permanece legível entre sessões.",
+    "missingKey": "Nenhuma chave de API do Gemini encontrada. Configure sua chave no cofre BYOK."
+  },
+  "export": {
+    "title": "Exportar PDF",
+    "subtitle": "Escolha como o arquivo do currículo será gerado",
+    "atsTitle": "Compatível com ATS",
+    "recommended": "Recomendado",
+    "atsDesc": "Texto real selecionável, links clicáveis e uma única coluna de leitura que os sistemas ATS interpretam na ordem correta. Arquivo pequeno, sem imagens. Use este para se candidatar a vagas.",
+    "visualTitle": "Visual (fidelidade de impressão)",
+    "visualDesc": "Captura fiel do layout da tela, exportada como PDF baseado em imagem. Ótimo para imprimir ou compartilhar visualmente — mas sistemas ATS não conseguem ler.",
+    "error": "Falha na exportação. Verifique o console do navegador para detalhes."
   },
   "ats": {
     "scoreTitle": "Pontuação ATS",

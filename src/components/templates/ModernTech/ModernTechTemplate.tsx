@@ -1,6 +1,7 @@
 import React from 'react';
 import { TemplateProps } from '../../../types/template';
-import { SectionContentRenderer, getFriendlyLinkLabel, getFullUrl } from '../SectionContentRenderer';
+import { SectionContentRenderer } from '../SectionContentRenderer';
+import { getFriendlyLinkLabel, getFullUrl } from '../linkHelpers';
 
 export const ModernTechTemplate: React.FC<TemplateProps> = ({ profile, previewRef }) => {
   const { personal, summary, sections, theme } = profile;

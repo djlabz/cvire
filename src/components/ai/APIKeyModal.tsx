@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { X, Key, ShieldCheck, Check } from 'lucide-react';
-import { saveEncryptedAPIKey } from '../../db/cryptoVault';
+import { X, Key, ShieldCheck, Check, TriangleAlert } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { saveEncryptedAPIKey, hasVaultResetNotice } from '../../db/cryptoVault';
 import { useUIStore } from '../../store/useUIStore';
 
 export const APIKeyModal: React.FC = () => {
+  const { t } = useTranslation();
   const { activeModal, closeModal } = useUIStore();
   const [geminiKey, setGeminiKey] = useState('');
   const [saved, setSaved] = useState(false);
 
   if (activeModal !== 'api-key-byok') return null;
+
+  const showResetNotice = hasVaultResetNotice();
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +49,15 @@ export const APIKeyModal: React.FC = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
+          {showResetNotice && (
+            <div
+              className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl flex items-start gap-2.5 text-xs text-amber-300"
+              role="alert"
+            >
+              <TriangleAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <span>{t('apiKey.resetNotice')}</span>
+            </div>
+          )}
           <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl flex items-start gap-2.5 text-xs text-blue-300">
             <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
             <span>

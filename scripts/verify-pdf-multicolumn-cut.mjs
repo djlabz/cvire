@@ -1,8 +1,22 @@
+/**
+ * Browser check for the VISUAL export's multi-page slicing (requires the app
+ * running — override URL with CVIRE_URL).
+ *
+ * The visual pipeline rasterizes the on-screen canvas and slices it into A4
+ * pages using pdfPageCut's keep-together bands. Since the visual mode is
+ * image-only by design (no text layer — see exportService.ts), this script
+ * asserts structural properties: page count grows with padded content, every
+ * page carries a raster image, and no extractable text exists.
+ *
+ * Keep-together band CORRECTNESS is unit-tested in src/services/pdfPageCut.test.ts,
+ * and the ATS export's pagination is covered by scripts/verify-ats-pagination.tsx.
+ */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { extractPdfText } from './verify-pdf-text.mjs';
+import { exportPdf } from './smoke-pdf-export.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -21,16 +35,6 @@ async function openDemoEditor(page) {
   await page.waitForTimeout(500);
 }
 
-async function exportPdf(page, filename) {
-  const downloadPromise = page.waitForEvent('download', { timeout: 120000 });
-  const exportBtn = page.getByRole('button', { name: /Export PDF|Exportar PDF/i });
-  await exportBtn.click();
-  const download = await downloadPromise;
-  const target = path.join(outDir, filename);
-  await download.saveAs(target);
-  return target;
-}
-
 async function padMainColumn(page) {
   await page.evaluate(() => {
     const main = document.querySelector('.a4-paper .grid > .col-span-2');
@@ -45,50 +49,6 @@ async function padMainColumn(page) {
   await page.waitForTimeout(400);
 }
 
-function assertPhraseOnSinglePage(extracted, phrase) {
-  const pagesWithPhrase = extracted.pages
-    .map((text, idx) => ({ idx: idx + 1, text }))
-    .filter(({ text }) => text.includes(phrase));
-
-  if (pagesWithPhrase.length === 0) {
-    throw new Error(`Phrase "${phrase}" missing from PDF text layer`);
-  }
-
-  if (pagesWithPhrase.length > 1) {
-    throw new Error(`Phrase "${phrase}" found on multiple pages: ${pagesWithPhrase.map((p) => p.idx).join(', ')}`);
-  }
-
-  const pageText = pagesWithPhrase[0].text;
-  if (pageText.includes('Englis') && !pageText.includes('English')) {
-    throw new Error('Detected sliced English token on page text');
-  }
-}
-
-function assertTitleNotOrphaned(extracted, title, companions) {
-  const titleRe = new RegExp(title, 'i');
-  for (let i = 0; i < extracted.pages.length; i += 1) {
-    const page = extracted.pages[i];
-    if (!titleRe.test(page)) continue;
-    const hasCompanion = companions.some((c) => page.includes(c));
-    if (!hasCompanion) {
-      throw new Error(
-        `Orphan title "${title}" on page ${i + 1} without companions [${companions.join(', ')}]`
-      );
-    }
-  }
-}
-
-async function selectTemplate(page, name) {
-  const trigger = page.getByRole('button', { name: /Template|Modern Tech|Executive Classic|Minimalist/i }).first();
-  if (await trigger.count()) {
-    await trigger.click();
-  } else {
-    await page.getByText(/Modern Tech|Template/i).first().click();
-  }
-  await page.getByText(name, { exact: true }).first().click();
-  await page.waitForTimeout(500);
-}
-
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const browser = await chromium.launch({ headless: true });
@@ -98,26 +58,39 @@ async function main() {
   try {
     await waitForApp(page);
     await openDemoEditor(page);
+
+    const singlePath = await exportPdf(page, 'visual', 'visual-single.pdf');
+    const single = await extractPdfText(singlePath);
+
     await padMainColumn(page);
+    const multiPath = await exportPdf(page, 'visual', 'visual-multipage.pdf');
+    const multi = await extractPdfText(multiPath);
 
-    const modernPath = await exportPdf(page, 'modern-tech-multipage.pdf');
-    const modern = await extractPdfText(modernPath);
-    if (modern.numPages < 2) {
-      throw new Error(`Expected multipage ModernTech PDF, got ${modern.numPages} page(s)`);
+    if (multi.numPages < 2) {
+      throw new Error(`Expected padded export to span 2+ pages, got ${multi.numPages}`);
     }
-    assertPhraseOnSinglePage(modern, 'English');
-    assertTitleNotOrphaned(modern, 'Languages', ['English', 'Portuguese']);
-    assertTitleNotOrphaned(modern, 'Work Experience', ['Senior Frontend Engineer', 'Frontend Web Developer']);
-    console.log(`OK ModernTech: ${modern.numPages} pages, English intact, no orphan titles → ${modernPath}`);
+    if (multi.numPages <= single.numPages) {
+      throw new Error(
+        `Padded export (${multi.numPages}p) should have more pages than unpadded (${single.numPages}p)`
+      );
+    }
+    if (multi.full.trim().length > 0) {
+      throw new Error('Visual export must not contain extractable text (invisible layer resurrected?)');
+    }
 
-    await selectTemplate(page, 'Executive Classic');
-    const classicPath = await exportPdf(page, 'executive-classic-multipage.pdf');
-    const classic = await extractPdfText(classicPath);
-    if (classic.numPages < 1) {
-      throw new Error('Executive Classic export failed');
+    const rawBytes = fs.readFileSync(multiPath).toString('latin1');
+    const imageCount = rawBytes.split('/Subtype /Image').length - 1;
+    if (imageCount < multi.numPages) {
+      throw new Error(`Expected >= ${multi.numPages} page images, found ${imageCount}`);
     }
-    assertPhraseOnSinglePage(classic, 'English');
-    console.log(`OK Executive Classic: ${classic.numPages} pages, English intact → ${classicPath}`);
+
+    console.log(
+      JSON.stringify({
+        ok: true,
+        single: { file: singlePath, numPages: single.numPages, sizeBytes: single.sizeBytes },
+        multi: { file: multiPath, numPages: multi.numPages, sizeBytes: multi.sizeBytes, imageCount },
+      }, null, 2)
+    );
   } finally {
     await browser.close();
   }
