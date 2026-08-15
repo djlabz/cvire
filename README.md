@@ -25,10 +25,25 @@ cvire runs entirely in the browser using IndexedDB for local persistent storage.
 
 ## Screenshots
 
-<!-- TODO: capture and commit real assets under docs/media/ -->
-| Dashboard | Editor & A4 preview | ATS-safe export |
-|-----------|--------------------|-----------------|
-| _screenshot pending_ | _screenshot pending_ | _screenshot pending_ |
+**Dashboard** — multi-profile management; every resume lives in the browser's IndexedDB.
+
+![cvire dashboard with the seeded demo resume](docs/media/dashboard.png)
+
+**Editor & live A4 preview** — split view with real-time page-cut lines at every A4 boundary.
+
+![cvire editor next to the live A4 preview](docs/media/editor-preview.png)
+
+| Export modes | ATS text view |
+|---|---|
+| ![Export dialog offering ATS-safe and Visual modes](docs/media/export-modal.png) | ![Linearized plain text an ATS parser extracts](docs/media/ats-text-view.png) |
+
+The screenshots are generated from the running app, not hand-edited — regenerate them with:
+
+```bash
+npm run capture:media
+```
+
+That builds the app, boots `vite preview`, drives it with Playwright at a fixed viewport, and rewrites `docs/media/`. Set `CVIRE_URL` to capture against an app you already have running.
 
 ---
 
@@ -157,6 +172,11 @@ npm run lint        # oxlint
 npm test            # unit tests (page cuts, crypto vault, ATS engine, job matcher)
 npm run verify:ats  # headless ATS-safety checks on the text-native export
 npm run smoke:pdf   # browser smoke test of both export modes (needs `npm run dev` running)
+```
+
+### Docs
+```bash
+npm run capture:media  # regenerate the README screenshots in docs/media/
 ```
 
 ---

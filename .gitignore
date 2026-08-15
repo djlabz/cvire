@@ -18,6 +18,9 @@ tmp/
 *.pdf
 *.png
 
+# README assets are committed on purpose (regenerate with `npm run capture:media`)
+!docs/media/*.png
+
 # CV do usuário: anexos, gerados e despejo de versões antigas
 cv-content/inbox/*
 !cv-content/inbox/README.md
