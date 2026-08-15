@@ -1,8 +1,14 @@
 /* oxlint-disable react/only-export-components -- react-pdf primitives, not DOM components; fast refresh does not apply */
 import React from 'react';
-import { Document, Page, Text, View, Link, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Link, StyleSheet, Font } from '@react-pdf/renderer';
 import type { DocumentProps } from '@react-pdf/renderer';
 import { CVProfile, CVSection, SectionItem, getEffectiveDisplayMode } from '../types/cv';
+
+// @react-pdf/renderer auto-hyphenates overflowing words by default (e.g.
+// "strategies" -> "strate-\ngies"). A resume must never break a word with a
+// visible hyphen, so treat every word as a single unbreakable unit — long
+// words simply wrap whole to the next line instead.
+Font.registerHyphenationCallback((word) => [word]);
 
 /**
  * Text-native, ATS-safe PDF document built with @react-pdf/renderer.
