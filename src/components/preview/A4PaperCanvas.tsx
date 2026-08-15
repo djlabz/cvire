@@ -1,10 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { useCVStore } from '../../store/useCVStore';
 import { useUIStore } from '../../store/useUIStore';
 import { getTemplateRenderer } from '../templates/registry';
+import type { CVProfile } from '../../types/cv';
+
+/**
+ * Memoized wrapper around the active template renderer.
+ *
+ * `React.memo` is what makes the `useDeferredValue` below actually pay off: during
+ * the urgent render pass the deferred profile is still the previous object, so the
+ * whole template subtree bails out instead of re-rendering with stale props.
+ */
+const TemplateSurface = React.memo<{
+  profile: CVProfile;
+  previewRef: React.RefObject<HTMLDivElement | null>;
+}>(({ profile, previewRef }) => {
+  const TemplateComponent = getTemplateRenderer(profile.templateId);
+  return <TemplateComponent profile={profile} previewRef={previewRef} />;
+});
+TemplateSurface.displayName = 'TemplateSurface';
 
 export const A4PaperCanvas: React.FC = () => {
-  const { activeProfile } = useCVStore();
+  const liveProfile = useCVStore((state) => state.activeProfile);
+  // Typing in the editor updates the store on every keystroke. Deferring the profile
+  // keeps the input responsive: React renders the (expensive) A4 template at low
+  // priority and can interrupt it when the next keystroke arrives.
+  const activeProfile = useDeferredValue(liveProfile);
   const { zoomLevel } = useUIStore();
   const paperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +85,6 @@ export const A4PaperCanvas: React.FC = () => {
 
   if (!activeProfile) return null;
 
-  const TemplateComponent = getTemplateRenderer(activeProfile.templateId);
   const scaledWidth = Math.round(794 * effectiveScale);
   const scaledHeight = Math.round(paperHeight * effectiveScale);
 
@@ -85,7 +105,7 @@ export const A4PaperCanvas: React.FC = () => {
         >
           <div className="relative">
             {/* Render Active Template */}
-            <TemplateComponent profile={activeProfile} previewRef={paperRef} />
+            <TemplateSurface profile={activeProfile} previewRef={paperRef} />
 
             {/* Dynamic Visual Page Cut Lines */}
             {pageBreaks.map((breakY, index) => (

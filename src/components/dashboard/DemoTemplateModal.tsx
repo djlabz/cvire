@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Sparkles, Code, Palette } from 'lucide-react';
 import { demoProfiles } from '../../data/initialData';
 import { useCVStore } from '../../store/useCVStore';
+import { useEscapeToClose } from '../../hooks/useEscapeToClose';
 
 interface DemoTemplateModalProps {
   isOpen: boolean;
@@ -15,11 +16,14 @@ export const DemoTemplateModal: React.FC<DemoTemplateModalProps> = ({
   onSelect,
 }) => {
   const { importProfiles } = useCVStore();
+  useEscapeToClose(isOpen, onClose);
 
   if (!isOpen) return null;
 
   const handleLoadDemo = async (profileIndex: number) => {
     const demo = demoProfiles[profileIndex];
+    if (!demo) return;
+
     const clonedDemo = {
       ...demo,
       id: `cv-demo-${Date.now()}`,
@@ -73,7 +77,7 @@ export const DemoTemplateModal: React.FC<DemoTemplateModalProps> = ({
           </div>
 
           <div
-            onClick={() => handleLoadDemo(0)}
+            onClick={() => handleLoadDemo(1)}
             className="group bg-[#0d1322] border border-[#222f47] hover:border-purple-500 p-5 rounded-2xl cursor-pointer transition-all hover:shadow-xl hover:shadow-purple-500/10"
           >
             <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center mb-3">

@@ -23,6 +23,7 @@
     "verify:pdf": "node scripts/verify-pdf-text.mjs",
     "verify:ats": "tsx scripts/generate-ats-sample.tsx tmp/ats-sample.pdf && node scripts/verify-ats-pdf.mjs tmp/ats-sample.pdf && tsx scripts/verify-ats-pagination.tsx",
     "smoke:pdf": "node scripts/smoke-pdf-export.mjs",
+    "capture:media": "npm run build && node scripts/capture-media.mjs",
     "test:pdf-cut": "tsx --test src/services/pdfPageCut.test.ts",
     "verify:pdf-cut": "node scripts/verify-pdf-multicolumn-cut.mjs",
     "serve:cv-board": "bash cv-content/scripts/serve-board.sh"

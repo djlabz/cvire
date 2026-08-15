@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCVStore } from './store/useCVStore';
 import { useUIStore } from './store/useUIStore';
+import { useEscapeToClose } from './hooks/useEscapeToClose';
 import { useTranslation } from 'react-i18next';
 import { DashboardHeader } from './components/dashboard/DashboardHeader';
 import { ProfileGrid } from './components/dashboard/ProfileGrid';
@@ -23,7 +24,12 @@ import { ArrowLeft, LayoutTemplate, Palette, History, BarChart3, Pencil } from '
 export const App: React.FC = () => {
   const { t } = useTranslation();
   const { initStore, activeProfile, selectProfile, updateProfileTitle, isLoading } = useCVStore();
-  const { viewMode, openModal } = useUIStore();
+  const { viewMode, openModal, activeModal, closeModal } = useUIStore();
+
+  // Every dialog and drawer below is driven by `activeModal`, so one listener
+  // gives all of them Escape-to-close (the demo picker owns its own local state
+  // and wires the same hook itself).
+  useEscapeToClose(activeModal !== 'none', closeModal);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
