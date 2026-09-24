@@ -48,6 +48,15 @@
     "importJson": "Import JSON",
     "downloadAiJson": "AI JSON Template"
   },
+  "dropzone": {
+    "title": "Drop to import",
+    "subtitle": "Drag one or more cvire JSON files (backup or AI template) to add them to your resumes.",
+    "importing": "Importing resumes...",
+    "successTitle": "Import complete",
+    "successDetail": "{{count}} resume(s) added to cvire.",
+    "errorTitle": "Import failed",
+    "notJson": "Only .json files can be imported."
+  },
   "editor": {
     "personalInfo": "Personal Information",
     "fullName": "Full Name",

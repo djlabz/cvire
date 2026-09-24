@@ -48,6 +48,15 @@
     "importJson": "Importar JSON",
     "downloadAiJson": "Modelo IA (JSON)"
   },
+  "dropzone": {
+    "title": "Solte para importar",
+    "subtitle": "Arraste um ou mais arquivos JSON do cvire (backup ou modelo IA) para adicioná-los aos seus currículos.",
+    "importing": "Importando currículos...",
+    "successTitle": "Importação concluída",
+    "successDetail": "{{count}} currículo(s) adicionado(s) ao cvire.",
+    "errorTitle": "Falha na importação",
+    "notJson": "Só arquivos .json podem ser importados."
+  },
   "editor": {
     "personalInfo": "Informações Pessoais",
     "fullName": "Nome Completo",

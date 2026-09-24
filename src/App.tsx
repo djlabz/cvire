@@ -13,6 +13,7 @@ import { ATSPlainPreviewModal } from './components/ats/ATSPlainPreviewModal';
 import { JobMatcherDrawer } from './components/ai/JobMatcherDrawer';
 import { APIKeyModal } from './components/ai/APIKeyModal';
 import { DemoTemplateModal } from './components/dashboard/DemoTemplateModal';
+import { JsonDropZone } from './components/dashboard/JsonDropZone';
 import { TemplatePickerModal } from './components/templates/TemplatePickerModal';
 import { ThemeCustomizerDrawer } from './components/editor/ThemeCustomizerDrawer';
 import { VersionHistoryDrawer } from './components/dashboard/VersionHistoryDrawer';
@@ -178,6 +179,7 @@ export const App: React.FC = () => {
       <JobMatcherDrawer />
       <APIKeyModal />
       <ExportModal />
+      <JsonDropZone />
       <DemoTemplateModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}

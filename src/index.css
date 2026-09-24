@@ -52,6 +52,41 @@
   background: var(--accent-blue);
 }
 
+/* JSON drag & drop import overlay */
+.cv-dropzone-dash {
+  animation: cv-dash-march 1.6s linear infinite;
+}
+
+@keyframes cv-dash-march {
+  to { stroke-dashoffset: -18; }
+}
+
+.cv-dropzone-float {
+  animation: cv-float 3s ease-in-out infinite;
+}
+
+@keyframes cv-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.cv-toast-in {
+  animation: cv-toast-in 200ms ease-out;
+}
+
+@keyframes cv-toast-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-dropzone-dash,
+  .cv-dropzone-float,
+  .cv-toast-in {
+    animation: none;
+  }
+}
+
 /* A4 Visual Canvas Styling */
 .a4-paper {
   width: 794px;
