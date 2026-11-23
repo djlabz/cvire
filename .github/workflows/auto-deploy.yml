@@ -34,4 +34,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
+          # Keep hashed assets from earlier deploys so tabs still running an older
+          # build can lazy-load their chunks instead of getting a 404.
+          keep_files: true
           commit_message: "deploy: automated build from github actions"
