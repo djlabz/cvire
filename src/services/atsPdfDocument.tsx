@@ -37,13 +37,18 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingHorizontal: 44,
   },
+  // Explicit lineHeight: the inherited page lineHeight (1.4) is resolved against
+  // the page font size (9.5pt), leaving the 19pt name line too short so the job
+  // title overlaps it.
   name: {
     fontSize: 19,
+    lineHeight: 1.2,
     fontFamily: 'Helvetica-Bold',
     color: ACCENT,
   },
   jobTitle: {
     fontSize: 11.5,
+    lineHeight: 1.3,
     marginTop: 2,
     color: MUTED,
   },
@@ -195,7 +200,8 @@ const SectionItems: React.FC<{ section: CVSection }> = ({ section }) => {
               <ItemHeader item={item} />
             </View>
             {enabledBullets.map((bullet) => (
-              <View key={bullet.id} style={styles.bulletRow}>
+              // wrap={false}: keep the "•" glyph and its text on the same page
+              <View key={bullet.id} style={styles.bulletRow} wrap={false}>
                 <Text style={styles.bulletGlyph}>•</Text>
                 <Text style={styles.bulletText}>{bullet.text}</Text>
               </View>
